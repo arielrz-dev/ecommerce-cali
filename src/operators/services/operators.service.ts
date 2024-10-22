@@ -2,11 +2,23 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Order } from '../entities/orders.entity';
 import { ProductsService } from 'src/products/services/products.service';
 import { Operator } from '../entities/operator.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class OperatorsService {
   // Missing braces added here
-  constructor(private productsService: ProductsService) {}
+  constructor(
+    private productsService: ProductsService,
+    //private configService: ConfigService,
+  ) {}
+
+  findAll() {
+    // const apiKey = this.configService.get('API_KEY');
+    // const dbname = this.configService.get('DATABASE_NAME');
+    // const dbport = this.configService.get('DATABASE_PORT');
+    // console.log(dbport, dbname, apiKey);
+    return this.operators;
+  }
 
   getOrdersByUser(id: number): Order {
     const operator: Operator | void = this.findOne(id);
