@@ -1,13 +1,21 @@
 import { IsString, MinLength, MaxLength, IsNotEmpty } from 'class-validator';
-import { PartialType, OmitType } from '@nestjs/mapped-types';
+//PartialType y OmitType se importaran ahora desde swagger
+//import { PartialType, OmitType } from '@nestjs/mapped-types';
+import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 
 export class CreateCategoryDto {
+  @ApiProperty({
+    description: 'Category name',
+  })
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
   @MaxLength(50)
   readonly name: string;
 
+  @ApiProperty({
+    description: 'Detailed category description',
+  })
   @IsString()
   @IsNotEmpty()
   @MinLength(10)

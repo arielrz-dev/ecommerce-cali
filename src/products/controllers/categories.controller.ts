@@ -13,7 +13,9 @@ import { CategoriesService } from '../services/categories.service';
 import { ParseIntPipe } from '../../common/parse-int.pipe';
 import { UpdateCategoryDto } from '../dtos/UpdateCategoryDTO';
 import { CreateCategoryDto } from '../dtos/CreateCategoryDTO';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Categories')
 @Controller('categories')
 export class CategoriesController {
   constructor(private categoriesService: CategoriesService) {}
