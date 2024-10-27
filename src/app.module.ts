@@ -1,15 +1,19 @@
 import { Module } from '@nestjs/common';
+import { HttpModule, HttpService } from '@nestjs/axios';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './products/products.module';
 import { OperatorsModule } from './operators/operators.module';
 import { ConfigModule } from '@nestjs/config';
 import { environments } from './environments';
+import { DatabaseModule } from './database/database.module';
 import config from './config';
 import * as Joi from 'joi';
+import { lastValueFrom } from 'rxjs';
 
 @Module({
   imports: [
+    HttpModule,
     ConfigModule.forRoot({
       envFilePath: environments[process.env.NODE_ENV] || '.env',
       load: [config],
@@ -22,8 +26,22 @@ import * as Joi from 'joi';
     }),
     ProductsModule,
     OperatorsModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: 'TAREA_ASINC',
+      useFactory: async (http: HttpService) => {
+        const req = await http.get(
+          'https://jsonplaceholder.typicode.com/posts',
+        );
+        const tarea = await lastValueFrom(req);
+        return tarea.data;
+      },
+      inject: [HttpService],
+    },
+  ],
 })
 export class AppModule {}
