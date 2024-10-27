@@ -2,7 +2,9 @@ import { Controller, Get, Inject } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import config from './config';
 import { AppService } from './app.service';
+import { ApiExcludeController } from '@nestjs/swagger';
 
+@ApiExcludeController()
 @Controller()
 export class AppController {
   //constructor(private readonly appService: AppService) {}
