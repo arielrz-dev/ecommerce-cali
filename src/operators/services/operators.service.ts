@@ -1,14 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Order } from '../entities/orders.entity';
 import { ProductsService } from 'src/products/services/products.service';
 import { Operator } from '../entities/operator.entity';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class OperatorsService {
   // Missing braces added here
   constructor(
     private productsService: ProductsService,
+    @Inject('APIKEY') private apiKey: string,
     //private configService: ConfigService,
   ) {}
 
