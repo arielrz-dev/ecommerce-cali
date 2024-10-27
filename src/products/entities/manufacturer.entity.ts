@@ -1,7 +1,7 @@
 export class Manufacturer {
   id: number;
   name: string;
-  adress: string;
+  address: string;
   email: string;
   image: string;
 }
