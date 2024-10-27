@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateManufacturerDto } from '../dtos/UpdateManufacturerDto';
 import { Manufacturer } from '../entities/manufacturer.entity';
+import { CreateManufacturerDto } from '../dtos/CreateManufacturerDTO';
 
 @Injectable()
 export class ManufacturersService {
@@ -42,7 +43,7 @@ export class ManufacturersService {
     },
   ];
 
-  create(CreateManufacturersDto: CreateManufacturersDto): Manufacturer {
+  create(CreateManufacturersDto: CreateManufacturerDto): Manufacturer {
     const newManufacturerId = this.manufacturers.length
       ? Math.max(...this.manufacturers.map((p) => p.id)) + 1
       : 1;
@@ -74,8 +75,6 @@ export class ManufacturersService {
     );
 
     if (manufacturerIndex !== -1) {
-      // Esta estrategia copia todos los valores de los atributos de un Manufacturero expecifico a
-      // updatedManufacturer,lugo lo mismo para con payload,
       const updatedManufacturer = {
         ...this.manufacturers[manufacturerIndex],
         ...payload,
@@ -86,11 +85,7 @@ export class ManufacturersService {
       console.warn(`Manufacturer with ID ${id} not found.`);
     }
   }
-  //
-  //   update(id: number, updateManufacturerDto: UpdateManufacturerDto) {
-  //     return `This action updates a #${id} Manufacturer`;
-  //   }
-  //
+
   remove(id: number) {
     const index = this.manufacturers.findIndex(
       (manufacturer) => manufacturer.id === id,

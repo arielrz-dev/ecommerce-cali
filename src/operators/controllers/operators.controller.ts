@@ -1,20 +1,53 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
-import { OperatorsService } from '../services/operators.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { OperatorsService } from '../services/operators.service';
+import { CreateOperatorDto } from '../dtos/CreateOperatorDTO';
+import { UpdateOperatorDto } from '../dtos/UpdateOperatorDTO';
 
 @ApiTags('Operators')
 @Controller('operators')
 export class OperatorsController {
-  constructor(private operatorsService: OperatorsService) {}
+  constructor(private readonly operatorsService: OperatorsService) {}
 
-  @ApiOperation({ summary: 'Get all the operators' })
+  @ApiOperation({ summary: 'Get all operators' })
   @Get()
-  getAll() {
+  getAllOperators() {
     return this.operatorsService.findAll();
   }
-  @ApiOperation({ summary: 'Get the orders assigned to an operator' })
-  @Get(':id/orders')
-  getOrders(@Param('id', ParseIntPipe) id: number) {
-    return this.operatorsService.getOrdersByUser(id);
+
+  @ApiOperation({ summary: 'Get an operator by ID' })
+  @Get(':idOperator')
+  @HttpCode(HttpStatus.ACCEPTED)
+  getOperator(@Param('idOperator', ParseIntPipe) idOperator: number) {
+    return this.operatorsService.findOne(idOperator);
+  }
+
+  @ApiOperation({ summary: 'Create a new operator' })
+  @Post()
+  createOperator(@Body() payload: CreateOperatorDto) {
+    return this.operatorsService.create(payload);
+  }
+
+  @ApiOperation({ summary: 'Update an existing operator' })
+  @Put('/:id')
+  updateOperator(@Param('id') id: number, @Body() payload: UpdateOperatorDto) {
+    return this.operatorsService.update(id, payload);
+  }
+
+  @ApiOperation({ summary: 'Delete an operator by ID' })
+  @Delete('/:id')
+  deleteOperator(@Param('id', ParseIntPipe) id: number) {
+    return this.operatorsService.remove(id);
   }
 }

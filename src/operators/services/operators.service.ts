@@ -2,40 +2,18 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Order } from '../entities/orders.entity';
 import { ProductsService } from 'src/products/services/products.service';
 import { Operator } from '../entities/operator.entity';
+import {
+  CreateOperatorDto,
+  UpdateOperatorDto,
+} from '../dtos/CreateOperatorDTO';
 
 @Injectable()
 export class OperatorsService {
-  // Missing braces added here
   constructor(
     private productsService: ProductsService,
     @Inject('APIKEY') private apiKey: string,
     //private configService: ConfigService,
   ) {}
-
-  findAll() {
-    // const apiKey = this.configService.get('API_KEY');
-    // const dbname = this.configService.get('DATABASE_NAME');
-    // const dbport = this.configService.get('DATABASE_PORT');
-    // console.log(dbport, dbname, apiKey);
-    return this.operators;
-  }
-
-  getOrdersByUser(id: number): Order {
-    const operator: Operator | void = this.findOne(id);
-    return {
-      date: new Date(),
-      operator,
-      products: this.productsService.findAll(),
-    };
-  }
-
-  findOne(id: number): Operator {
-    const operator = this.operators.find((item) => item.id === id);
-    if (!operator) {
-      throw new NotFoundException(`Operator with id ${id} is not found`);
-    }
-    return operator;
-  }
 
   operators = [
     {
@@ -69,4 +47,58 @@ export class OperatorsService {
       role: 'support_agent',
     },
   ];
+
+  getOrdersByUser(id: number): Order {
+    const operator: Operator | void = this.findOne(id);
+    return {
+      date: new Date(),
+      operator,
+      products: this.productsService.findAll(),
+    };
+  }
+
+  findAll(): Operator[] {
+    return this.operators;
+  }
+
+  findOne(id: number): Operator {
+    const operator = this.operators.find((item) => item.id === id);
+    if (!operator) {
+      throw new NotFoundException(`Operator with ID ${id} not found`);
+    }
+    return operator;
+  }
+
+  create(createOperatorDto: CreateOperatorDto): Operator {
+    const newOperatorId = this.operators.length
+      ? Math.max(...this.operators.map((o) => o.id)) + 1
+      : 1;
+    const newOperator: Operator = {
+      id: newOperatorId,
+      ...createOperatorDto,
+    };
+    this.operators.push(newOperator);
+    return newOperator;
+  }
+
+  update(id: number, payload: UpdateOperatorDto): Operator {
+    const operatorIndex = this.operators.findIndex(
+      (operator) => operator.id === id,
+    );
+    if (operatorIndex === -1) {
+      throw new NotFoundException(`Operator with ID ${id} not found`);
+    }
+    const updatedOperator = { ...this.operators[operatorIndex], ...payload };
+    this.operators[operatorIndex] = updatedOperator;
+    return updatedOperator;
+  }
+
+  remove(id: number): boolean {
+    const index = this.operators.findIndex((operator) => operator.id === id);
+    if (index === -1) {
+      throw new NotFoundException(`Operator with ID ${id} not found`);
+    }
+    this.operators.splice(index, 1);
+    return true;
+  }
 }
