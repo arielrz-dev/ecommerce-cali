@@ -6,10 +6,12 @@ import {
   CreateOperatorDto,
   UpdateOperatorDto,
 } from '../dtos/CreateOperatorDTO';
+import { Client } from 'pg';
 
 @Injectable()
 export class OperatorsService {
   constructor(
+    @Inject('PG') private clientPg: Client,
     private productsService: ProductsService,
     @Inject('APIKEY') private apiKey: string,
     //private configService: ConfigService,
@@ -59,6 +61,17 @@ export class OperatorsService {
 
   findAll(): Operator[] {
     return this.operators;
+  }
+
+  getTasks() {
+    return new Promise((resolve, reject) => {
+      this.clientPg.query('SELECT * FROM tareas', (err, res) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(res.rows);
+      });
+    });
   }
 
   findOne(id: number): Operator {

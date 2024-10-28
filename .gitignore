@@ -132,3 +132,6 @@ dist
  .idea/
 
 /dist
+
+/postgres_data
+/mysql_data

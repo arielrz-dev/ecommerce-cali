@@ -1,11 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Client } from 'pg';
 
 @Injectable()
 export class AppService {
   configService: any;
   constructor(
     // @Inject('TAREA ASINC') private tarea: any[],
+    @Inject('PG') private clientPg: Client,
     @Inject('TAREA_ASINC') private tarea: any[],
     private config: ConfigService,
   ) {}
@@ -20,5 +22,16 @@ export class AppService {
   getUseFactory(): string {
     console.log(this.tarea); //se utiliza el useFactory
     return 'Realizando una tarea de ejemplo';
+  }
+
+  getTasks() {
+    return new Promise((resolve, reject) => {
+      this.clientPg.query('SELECT * FROM tareas', (err, res) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(res.rows);
+      });
+    });
   }
 }
