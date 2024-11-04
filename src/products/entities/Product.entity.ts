@@ -3,6 +3,8 @@ import {
   Column,
   PrimaryGeneratedColumn,
   DeleteDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('products')
@@ -30,4 +32,16 @@ export class Product {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @CreateDateColumn({
+    type: 'timestamptz',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  createdAt?: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamptz',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  updateAt?: Date;
 }

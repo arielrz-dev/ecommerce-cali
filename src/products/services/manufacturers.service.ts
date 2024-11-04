@@ -1,102 +1,84 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { UpdateManufacturerDto } from '../dtos/UpdateManufacturerDto';
 import { Manufacturer } from '../entities/manufacturer.entity';
 import { CreateManufacturerDto } from '../dtos/CreateManufacturerDTO';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ManufacturersService {
-  manufacturers = [
-    {
-      id: 1,
-      name: 'Apple Inc.',
-      address: '1 Apple Park Way, Cupertino, CA, USA',
-      email: 'support@apple.com',
-      image: 'https://example.com/images/apple.png',
-    },
-    {
-      id: 2,
-      name: 'Samsung Electronics',
-      address: '129 Samsung-ro, Yeongtong-gu, Suwon-si, South Korea',
-      email: 'support@samsung.com',
-      image: 'https://example.com/images/samsung.png',
-    },
-    {
-      id: 3,
-      name: 'Sony Interactive Entertainment',
-      address: '1-7-1 Konan, Minato-ku, Tokyo, Japan',
-      email: 'support@sony.com',
-      image: 'https://example.com/images/sony.png',
-    },
-    {
-      id: 4,
-      name: 'Nintendo Co., Ltd.',
-      address: '11-1 Kamitoba-hokotate-cho, Minami-ku, Kyoto, Japan',
-      email: 'support@nintendo.com',
-      image: 'https://example.com/images/nintendo.png',
-    },
-    {
-      id: 5,
-      name: 'Microsoft Corporation',
-      address: 'One Microsoft Way, Redmond, WA, USA',
-      email: 'support@microsoft.com',
-      image: 'https://example.com/images/microsoft.png',
-    },
-  ];
+  constructor(
+    @InjectRepository(Manufacturer)
+    private manufacturerRepository: Repository<Manufacturer>,
+  ) {}
 
-  create(CreateManufacturersDto: CreateManufacturerDto): Manufacturer {
-    const newManufacturerId = this.manufacturers.length
-      ? Math.max(...this.manufacturers.map((p) => p.id)) + 1
-      : 1;
-
-    const newManufacturer: Manufacturer = {
-      id: newManufacturerId,
-      ...CreateManufacturersDto,
-    };
-
-    this.manufacturers.push(newManufacturer);
-    return newManufacturer;
-  }
-
-  findAll() {
-    return this.manufacturers;
-  }
-
-  findOne(id: number): Manufacturer {
-    const Manufacturer = this.manufacturers.find((item) => item.id === id);
-    if (!Manufacturer) {
-      throw new NotFoundException(`Manufacturer with id ${id} is not found`);
-    }
-    return Manufacturer;
-  }
-
-  update(id: number, payload: UpdateManufacturerDto): void {
-    const manufacturerIndex = this.manufacturers.findIndex(
-      (Manufacturer) => Manufacturer.id === id,
-    );
-
-    if (manufacturerIndex !== -1) {
-      const updatedManufacturer = {
-        ...this.manufacturers[manufacturerIndex],
-        ...payload,
-      };
-
-      this.manufacturers.splice(manufacturerIndex, 1, updatedManufacturer);
-    } else {
-      console.warn(`Manufacturer with ID ${id} not found.`);
-    }
-  }
-
-  remove(id: number) {
-    const index = this.manufacturers.findIndex(
-      (manufacturer) => manufacturer.id === id,
-    );
-    if (index !== -1) {
-      this.manufacturers.splice(index, 1);
-      return true;
-    } else {
-      throw new NotFoundException(
-        `Manufacturer with ID ${id} not found in the array`,
+  async create(
+    createManufacturerDto: CreateManufacturerDto,
+  ): Promise<Manufacturer> {
+    const existingManufacturer = await this.manufacturerRepository.findOne({
+      where: { name: createManufacturerDto.name },
+    });
+    if (existingManufacturer) {
+      throw new ConflictException(
+        `Manufacturer with name ${createManufacturerDto.name} already exists`,
       );
     }
+    const newManufacturer = this.manufacturerRepository.create(
+      createManufacturerDto,
+    );
+    return await this.manufacturerRepository.save(newManufacturer);
+  }
+
+  async findAll(
+    page: number = 1,
+    pageSize: number = 10,
+  ): Promise<Manufacturer[]> {
+    return await this.manufacturerRepository.find({
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      order: { name: 'ASC' },
+    });
+  }
+
+  async findOne(id: number): Promise<Manufacturer> {
+    const manufacturer = await this.manufacturerRepository.findOne({
+      where: { id },
+    });
+    if (!manufacturer) {
+      throw new NotFoundException(`Manufacturer with id ${id} not found`);
+    }
+    return manufacturer;
+  }
+
+  async update(
+    id: number,
+    updateManufacturerDto: UpdateManufacturerDto,
+  ): Promise<Manufacturer> {
+    const manufacturer = await this.manufacturerRepository.findOne({
+      where: { id },
+    });
+    if (!manufacturer) {
+      throw new NotFoundException(`Manufacturer with id ${id} not found`);
+    }
+
+    const updatedManufacturer = this.manufacturerRepository.merge(
+      manufacturer,
+      updateManufacturerDto,
+    );
+    return await this.manufacturerRepository.save(updatedManufacturer);
+  }
+
+  async remove(id: number): Promise<void> {
+    const manufacturer = await this.manufacturerRepository.findOne({
+      where: { id },
+    });
+    if (!manufacturer) {
+      throw new NotFoundException(`Manufacturer with id ${id} not found`);
+    }
+    await this.manufacturerRepository.remove(manufacturer);
   }
 }
