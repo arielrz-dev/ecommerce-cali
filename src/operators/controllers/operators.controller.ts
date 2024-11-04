@@ -25,11 +25,11 @@ export class OperatorsController {
   getAllOperators() {
     return this.operatorsService.findAll();
   }
-  @Get('/tareas') //
-  @ApiOperation({ summary: 'Get all tasks' })
-  getTasks() {
-    return this.operatorsService.getTasks();
-  }
+  // @Get('/tareas') //
+  // @ApiOperation({ summary: 'Get all tasks' })
+  // getTasks() {
+  //   return this.operatorsService.getTasks();
+  // }
 
   @ApiOperation({ summary: 'Get an operator by ID' })
   @Get(':idOperator')
