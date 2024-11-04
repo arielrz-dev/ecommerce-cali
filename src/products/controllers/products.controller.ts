@@ -33,6 +33,12 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
+  @ApiOperation({ summary: 'Get all products including soft-deleted ones' })
+  @Get('all-with-deleted')
+  getAllProductsWithDeleted() {
+    return this.productsService.findAllWithDeleted();
+  }
+
   @ApiOperation({ summary: 'Get a product by ID' })
   @Get(':idProduct')
   @HttpCode(HttpStatus.ACCEPTED)
@@ -50,6 +56,12 @@ export class ProductsController {
   @Put('/:id')
   updateProduct(@Param('id') id: string, @Body() payload: UpdateProductDto) {
     return this.productsService.update(+id, payload);
+  }
+
+  @ApiOperation({ summary: 'Soft delete a product by ID' })
+  @Delete('soft/:id')
+  softDeleteProduct(@Param('id', ParseIntPipe) id: number) {
+    return this.productsService.softDelete(id);
   }
 
   @ApiOperation({ summary: 'Delete a product by ID' })

@@ -1,4 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity('products')
 export class Product {
@@ -22,4 +27,7 @@ export class Product {
 
   @Column({ type: 'varchar', length: 255 })
   image: string;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }
