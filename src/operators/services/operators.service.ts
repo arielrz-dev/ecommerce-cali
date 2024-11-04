@@ -50,12 +50,13 @@ export class OperatorsService {
     },
   ];
 
-  getOrdersByUser(id: number): Order {
+  async getOrdersByUser(id: number): Promise<Order> {
     const operator: Operator | void = this.findOne(id);
+    const products = await this.productsService.findAll();
     return {
       date: new Date(),
       operator,
-      products: this.productsService.findAll(),
+      products,
     };
   }
 
