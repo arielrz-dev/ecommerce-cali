@@ -4,6 +4,7 @@ import {
   MinLength,
   MaxLength,
   IsEmail,
+  IsOptional,
 } from 'class-validator';
 import { PartialType, OmitType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
@@ -34,6 +35,11 @@ export class CreateOperatorDto {
   @MinLength(3)
   @MaxLength(30)
   readonly role: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly buyerId: number;
 }
 
 export class UpdateOperatorDto extends PartialType(

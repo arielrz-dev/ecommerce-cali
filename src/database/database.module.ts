@@ -3,6 +3,8 @@ import { ConfigType } from '@nestjs/config';
 import { Client } from 'pg';
 import config from '../config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Operator } from 'src/operators/entities/operator.entity';
+import { Buyer } from 'src/operators/entities/buyer.entity';
 
 const APIKEY = 'DEV-456';
 const APIKEYPROD = 'PROD-12345';
@@ -33,8 +35,10 @@ client.connect();
           username: user,
           password,
           database: dbName,
-          synchronize: false,
+          //synchronize: false,
           autoLoadEntities: true,
+          entities: [Operator, Buyer], // Asegúrate de incluir todas las entidades aquí
+          synchronize: true,
         };
       },
     }),
