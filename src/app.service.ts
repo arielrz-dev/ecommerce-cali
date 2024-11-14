@@ -23,15 +23,4 @@ export class AppService {
     console.log(this.tarea); //se utiliza el useFactory
     return 'Realizando una tarea de ejemplo';
   }
-
-  getTasks() {
-    return new Promise((resolve, reject) => {
-      this.clientPg.query('SELECT * FROM tareas', (err, res) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(res.rows);
-      });
-    });
-  }
 }

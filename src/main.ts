@@ -28,9 +28,9 @@ async function bootstrap() {
   });
 
   client.connect();
-  client.query('SELECT * FROM tareas ORDER BY id', (err, res) => {
-    console.error(err);
-    console.log(res.rows);
-  });
+  // client.query('SELECT * FROM tareas ORDER BY id', (err, res) => {
+  //   console.error(err);
+  //   console.log(res.rows);
+  // });
 }
 bootstrap();
