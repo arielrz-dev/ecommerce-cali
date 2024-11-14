@@ -5,83 +5,100 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Order } from '../entities/orders.entity';
-import { ProductsService } from 'src/products/services/products.service';
 import { Operator } from '../entities/operator.entity';
 import {
   CreateOperatorDto,
   UpdateOperatorDto,
 } from '../dtos/CreateOperatorDTO';
+import { BuyersService } from './buyers.service';
 
 @Injectable()
 export class OperatorsService {
   constructor(
     @InjectRepository(Operator)
-    private operatorsRepository: Repository<Operator>,
-    private productsService: ProductsService,
+    private operatorRepository: Repository<Operator>,
+    private buyersService: BuyersService,
   ) {}
 
-  // async getOrdersByUser(id: number): Promise<Order> {
-  //   const operator = await this.findOne(id);
-  //   const products = await this.productsService.findAll();
-  //   return {
-  //     date: new Date(),
-  //     operator,
-  //     products,
-  //   };
-  // }
-
-  async findAll(page: number = 1, pageSize: number = 10): Promise<Operator[]> {
-    return this.operatorsRepository.find({
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      order: { email: 'ASC' },
+  async findAll(): Promise<Operator[]> {
+    return this.operatorRepository.find({
+      relations: ['buyer'],
     });
   }
 
   async findOne(id: number): Promise<Operator> {
-    const operator = await this.operatorsRepository.findOne({ where: { id } });
+    const operator = await this.operatorRepository.findOne(id, {
+      relations: ['buyer'],
+    });
     if (!operator) {
       throw new NotFoundException(`Operator with ID ${id} not found`);
     }
     return operator;
   }
 
-  async create(createOperatorDto: CreateOperatorDto): Promise<Operator> {
-    const existingOperator = await this.operatorsRepository.findOne({
-      where: { email: createOperatorDto.email },
+  async create(data: CreateOperatorDto): Promise<Operator> {
+    const existingOperator = await this.operatorRepository.findOne({
+      where: { email: data.email },
     });
     if (existingOperator) {
       throw new ConflictException(
-        `Operator with email ${createOperatorDto.email} already exists`,
+        `Operator with email ${data.email} already exists`,
       );
     }
 
-    const newOperator = this.operatorsRepository.create(createOperatorDto);
-    return this.operatorsRepository.save(newOperator);
+    let buyer = null;
+    if (data.buyerId) {
+      buyer = await this.buyersService.findOne(data.buyerId);
+      if (!buyer) {
+        throw new NotFoundException(`Buyer with ID ${data.buyerId} not found`);
+      }
+    }
+
+    const newOperator = this.operatorRepository.create({
+      ...data,
+      buyer,
+    });
+
+    return this.operatorRepository.save(newOperator);
   }
 
   async update(
     id: number,
     updateOperatorDto: UpdateOperatorDto,
   ): Promise<Operator> {
-    const operator = await this.operatorsRepository.findOne({ where: { id } });
+    const operator = await this.operatorRepository.findOne({
+      where: { id },
+      relations: ['buyer'], // Cargar la relación buyer
+    });
     if (!operator) {
       throw new NotFoundException(`Operator with id ${id} not found`);
     }
 
-    const updatedOperator = this.operatorsRepository.merge(
+    if (updateOperatorDto.buyerId) {
+      const buyer = await this.buyersService.findOne(updateOperatorDto.buyerId);
+      if (!buyer) {
+        throw new NotFoundException(
+          `Buyer with ID ${updateOperatorDto.buyerId} not found`,
+        );
+      }
+      operator.buyer = buyer;
+    }
+
+    const updatedOperator = this.operatorRepository.merge(
       operator,
       updateOperatorDto,
     );
-    return await this.operatorsRepository.save(updatedOperator);
+
+    return await this.operatorRepository.save(updatedOperator);
   }
 
   async remove(id: number): Promise<void> {
-    const operator = await this.operatorsRepository.findOne({ where: { id } });
+    const operator = await this.operatorRepository.findOne({
+      where: { id },
+    });
     if (!operator) {
       throw new NotFoundException(`Operator with id ${id} not found`);
     }
-    await this.operatorsRepository.remove(operator);
+    await this.operatorRepository.remove(operator);
   }
 }

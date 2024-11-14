@@ -2,11 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Buyer } from './buyer.entity';
 
-@Entity('operators')
+@Entity()
 export class Operator {
   @PrimaryGeneratedColumn()
   id: number;
@@ -31,4 +34,11 @@ export class Operator {
     default: () => 'CURRENT_TIMESTAMP',
   })
   updateAt?: Date;
+
+  @OneToOne(() => Buyer, (buyer) => buyer.operator, { nullable: true })
+  @JoinColumn({ name: 'buyerId' })
+  buyer: Buyer;
+
+  @Column({ name: 'buyerId', nullable: true })
+  buyerId: number;
 }

@@ -1,5 +1,5 @@
 import {
-  Body,
+  // Body,
   Controller,
   Delete,
   Get,
@@ -7,13 +7,13 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
-  Post,
-  Put,
+  // Post,
+  // Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BuyersService } from '../services/buyers.service';
-import { CreateBuyerDto } from '../dtos/CreateBuyerDTO';
-import { UpdateBuyerDto } from '../dtos/UpdateBuyerDto';
+// import { CreateBuyerDto } from '../dtos/CreateBuyerDTO';
+// import { UpdateBuyerDto } from '../dtos/UpdateBuyerDto';
 
 @ApiTags('Buyers')
 @Controller('buyers')
@@ -33,17 +33,17 @@ export class BuyersController {
     return this.buyersService.findOne(idBuyer);
   }
 
-  @Post()
-  @ApiOperation({ summary: 'Create a new buyer' })
-  createBuyer(@Body() payload: CreateBuyerDto) {
-    return this.buyersService.create(payload);
-  }
+  // @Post()
+  // @ApiOperation({ summary: 'Create a new buyer' })
+  // createBuyer(@Body() payload: CreateBuyerDto) {
+  //   return this.buyersService.create(payload);
+  // }
 
-  @Put('/:id')
-  @ApiOperation({ summary: 'Update an existing buyer' })
-  updateBuyer(@Param('id') id: string, @Body() payload: UpdateBuyerDto) {
-    return this.buyersService.update(+id, payload);
-  }
+  // @Put('/:id')
+  // @ApiOperation({ summary: 'Update an existing buyer' })
+  // updateBuyer(@Param('id') id: string, @Body() payload: UpdateBuyerDto) {
+  //   return this.buyersService.update(+id, payload);
+  // }
 
   @Delete('/:id')
   @ApiOperation({ summary: 'Delete a buyer by ID' })
