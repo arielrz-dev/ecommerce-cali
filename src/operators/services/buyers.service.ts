@@ -21,7 +21,7 @@ export class BuyersService {
   }
 
   async findOne(id: number): Promise<Buyer> {
-    const buyer = await this.buyerRepository.findOne(id);
+    const buyer = await this.buyerRepository.findOne({ where: { id } });
     if (!buyer) {
       throw new NotFoundException(`Buyer with id ${id} is not found`);
     }
@@ -29,7 +29,7 @@ export class BuyersService {
   }
 
   async update(id: number, payload: UpdateBuyerDto): Promise<Buyer> {
-    const buyer = await this.buyerRepository.findOne(id);
+    const buyer = await this.buyerRepository.findOne({ where: { id } });
     if (!buyer) {
       throw new NotFoundException(`Buyer with id ${id} is not found`);
     }
@@ -39,7 +39,7 @@ export class BuyersService {
   }
 
   async remove(id: number): Promise<void> {
-    const buyer = await this.buyerRepository.findOne(id);
+    const buyer = await this.buyerRepository.findOne({ where: { id } });
     if (!buyer) {
       throw new NotFoundException(`Buyer with id ${id} is not found`);
     }

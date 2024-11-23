@@ -27,7 +27,8 @@ export class OperatorsService {
   }
 
   async findOne(id: number): Promise<Operator> {
-    const operator = await this.operatorRepository.findOne(id, {
+    const operator = await this.operatorRepository.findOne({
+      where: { id },
       relations: ['buyer'],
     });
     if (!operator) {

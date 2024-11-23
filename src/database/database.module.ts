@@ -37,7 +37,7 @@ client.connect();
           database: dbName,
           //synchronize: false,
           autoLoadEntities: true,
-          entities: [Operator, Buyer], // Asegúrate de incluir todas las entidades aquí
+          entities: [Operator, Buyer],
           synchronize: true,
         };
       },
