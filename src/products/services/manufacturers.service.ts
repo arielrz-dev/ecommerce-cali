@@ -47,6 +47,7 @@ export class ManufacturersService {
   async findOne(id: number): Promise<Manufacturer> {
     const manufacturer = await this.manufacturerRepository.findOne({
       where: { id },
+      relations: ['products'],
     });
     if (!manufacturer) {
       throw new NotFoundException(`Manufacturer with id ${id} not found`);

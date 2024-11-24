@@ -4,4 +4,5 @@ export class UpdateProductDto {
   readonly stock?: number;
   readonly made_in?: string;
   readonly image?: string;
+  readonly manufacturerId?: number;
 }

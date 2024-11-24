@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Product } from './Product.entity';
 
 @Entity('manufacturers')
 export class Manufacturer {
@@ -34,4 +36,7 @@ export class Manufacturer {
     default: () => 'CURRENT_TIMESTAMP',
   })
   updateAt?: Date;
+
+  @OneToMany(() => Product, (product) => product.manufacturer)
+  products: Product[];
 }

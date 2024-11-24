@@ -6,6 +6,7 @@ import {
   MaxLength,
   IsNotEmpty,
   IsUrl,
+  IsArray,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { PartialType, OmitType } from '@nestjs/mapped-types';
@@ -63,6 +64,16 @@ export class CreateProductDto {
   @IsNotEmpty()
   @Transform(({ value }) => value.toLowerCase())
   readonly image: string;
+
+  @ApiProperty()
+  @IsUrl()
+  @IsPositive()
+  readonly manufacturerId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsArray()
+  readonly categoriesIds: number[];
 }
 
 export class UpdateProductDTO extends PartialType(
