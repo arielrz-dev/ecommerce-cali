@@ -2,11 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Operator } from './operator.entity';
+import { Order } from './orders.entity';
 
 @Entity()
 export class Buyer {
@@ -36,4 +38,7 @@ export class Buyer {
 
   @OneToOne(() => Operator, (operator) => operator.buyer, { nullable: true })
   operator: Operator;
+
+  @OneToMany(() => Order, (order) => order.buyer)
+  orders: Order[];
 }

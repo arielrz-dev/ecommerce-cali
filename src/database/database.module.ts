@@ -3,8 +3,9 @@ import { ConfigType } from '@nestjs/config';
 import { Client } from 'pg';
 import config from '../config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Operator } from 'src/operators/entities/operator.entity';
-import { Buyer } from 'src/operators/entities/buyer.entity';
+// import { Operator } from 'src/operators/entities/operator.entity';
+// import { Buyer } from 'src/operators/entities/buyer.entity';
+import { join } from 'path';
 
 const APIKEY = 'DEV-456';
 const APIKEYPROD = 'PROD-12345';
@@ -37,8 +38,16 @@ client.connect();
           database: dbName,
           //synchronize: false,
           autoLoadEntities: true,
-          entities: [Operator, Buyer],
+          //entities: [Operator, Buyer],
+          // entities: [
+          //   'src/operators/entities/**/*.ts', // Para entidades dentro de src/operators/entities
+          //   'src/products/entities/**/*.ts',
+          // ],
+          entities: [
+            join(__dirname, '..', '**', 'entities', '*.entity{.ts,.js}'),
+          ],
           synchronize: true,
+          logging: true,
         };
       },
     }),
