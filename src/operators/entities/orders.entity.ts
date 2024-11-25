@@ -1,12 +1,16 @@
-import { Product } from 'src/products/entities/Product.entity';
-import { Operator } from './operator.entity';
+// import { Product } from 'src/products/entities/Product.entity';
+// import { Operator } from './operator.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Buyer } from './buyer.entity';
+import { DetailOrder } from './detail_order.entity';
 
 //TODO: completar mas adelante
 @Entity('orders')
@@ -16,8 +20,6 @@ export class Order {
 
   @Column({ type: 'date' })
   date: Date;
-  operator: Operator;
-  products: Product[];
 
   @CreateDateColumn({
     type: 'timestamptz',
@@ -30,4 +32,10 @@ export class Order {
     default: () => 'CURRENT_TIMESTAMP',
   })
   updateAt?: Date;
+
+  @ManyToOne(() => Buyer, (buyer) => buyer.orders)
+  buyer: Buyer;
+
+  @OneToMany(() => DetailOrder, (detailOrder) => detailOrder.order)
+  details: DetailOrder[];
 }

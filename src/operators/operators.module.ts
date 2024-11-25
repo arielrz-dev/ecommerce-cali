@@ -10,10 +10,27 @@ import { Operator } from './entities/operator.entity';
 import { Buyer } from './entities/Buyer.entity';
 import { Order } from './entities/orders.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DetailOrder } from './entities/detail_order.entity';
+import { DetailOrderService } from './services/detail-order.service';
+import { DetailOrderController } from './controllers/detailorder.controller';
+import { Product } from 'src/products/entities/Product.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Operator, Buyer, Order]), ProductsModule],
-  controllers: [OperatorsController, BuyersController, OrdersController],
-  providers: [OperatorsService, BuyersService, OrdersService],
+  imports: [
+    TypeOrmModule.forFeature([Operator, Buyer, Order, DetailOrder, Product]),
+    ProductsModule,
+  ],
+  controllers: [
+    OperatorsController,
+    BuyersController,
+    OrdersController,
+    DetailOrderController,
+  ],
+  providers: [
+    OperatorsService,
+    BuyersService,
+    OrdersService,
+    DetailOrderService,
+  ],
 })
 export class OperatorsModule {}
