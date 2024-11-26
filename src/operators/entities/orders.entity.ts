@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Buyer } from './buyer.entity';
 import { DetailOrder } from './detail_order.entity';
+import { Expose } from 'class-transformer';
 
 //TODO: completar mas adelante
 @Entity('orders')
@@ -38,4 +39,30 @@ export class Order {
 
   @OneToMany(() => DetailOrder, (detailOrder) => detailOrder.order)
   details: DetailOrder[];
+
+  @Expose({ name: 'product' })
+  get products() {
+    if (this.details) {
+      return this.details
+        .filter((detail) => !!detail)
+        .map((detail) => ({
+          ...detail.product,
+          quantity: detail.quantity,
+        }));
+    }
+    return [];
+  }
+
+  @Expose({ name: 'total' })
+  get total() {
+    if (this.details) {
+      return this.details
+        .filter((detail) => !!detail)
+        .reduce((total, detail) => {
+          const totalDetail = detail.product.price * detail.quantity;
+          return total + totalDetail;
+        }, 0);
+    }
+    return 0;
+  }
 }

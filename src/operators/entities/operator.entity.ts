@@ -39,6 +39,6 @@ export class Operator {
   @JoinColumn({ name: 'buyerId' })
   buyer: Buyer;
 
-  @Column({ name: 'buyerId', nullable: true })
+  @Column({ name: 'buyer_id', nullable: true })
   buyerId: number;
 }

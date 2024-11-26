@@ -8,12 +8,14 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
 import { ParseIntPipe } from '../../common/parse-int.pipe';
 import { UpdateProductDto } from '../dtos/UpdateProductDTO';
-import { CreateProductDto } from '../dtos/CreateProductDTO';
+import { CreateProductDto, FilterProductsDto } from '../dtos/CreateProductDTO';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Filter } from 'aws-sdk/clients/devicefarm';
 
 @ApiTags('Products')
 @Controller('products')
@@ -22,8 +24,8 @@ export class ProductsController {
 
   @ApiOperation({ summary: 'Get all products' })
   @Get()
-  getAllProducts() {
-    return this.productsService.findAll();
+  getAllProducts(@Query() params: FilterProductsDto) {
+    return this.productsService.findAll(params);
   }
 
   @ApiOperation({ summary: 'Get a filtered list of products' })

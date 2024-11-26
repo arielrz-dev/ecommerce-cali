@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Product } from '../entities/Product.entity';
-import { CreateProductDto } from '../dtos/CreateProductDTO';
+import { CreateProductDto, FilterProductsDto } from '../dtos/CreateProductDTO';
 import { UpdateProductDto } from '../dtos/UpdateProductDTO';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, FindCondition, Repository } from 'typeorm';
 import { ManufacturersService } from './manufacturers.service';
 import { CategoriesService } from './categories.service';
 
@@ -69,13 +69,20 @@ export class ProductsService {
     }
   }
 
-  async findAll(page: number = 1, pageSize: number = 10): Promise<Product[]> {
-    return await this.productRepository.find({
-      relations: ['manufacturer', 'categories'],
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      order: { name: 'ASC' },
-    });
+  async findAll(params?: FilterProductsDto): Promise<Product[]> {
+    if (params) {
+      const { limit, offset } = params;
+      const { minPrice, maxPrice } = params;
+      const where: FindCondition<Product> = {}; //Tipado del where con product
+      if (minPrice && maxPrice) {
+        where.price = Between(minPrice, maxPrice);
+      }
+      return await this.productRepository.find({
+        skip: offset,
+        take: limit,
+        relations: ['manufacturer'],
+      });
+    }
   }
 
   async findOne(id: number): Promise<Product> {

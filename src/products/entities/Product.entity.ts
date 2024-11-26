@@ -8,10 +8,13 @@ import {
   ManyToOne,
   JoinColumn,
   ManyToMany,
+  Index,
 } from 'typeorm';
 import { Manufacturer } from './manufacturer.entity';
 import { Category } from './Category.entity';
+import { Exclude } from 'class-transformer';
 
+@Index(['manufacturer_id', 'price'])
 @Entity('products')
 export class Product {
   @PrimaryGeneratedColumn()
@@ -32,18 +35,22 @@ export class Product {
   @Column({ type: 'varchar', length: 70 })
   made_in: string;
 
+  @Exclude()
   @Column({ type: 'varchar', length: 255 })
   image: string;
 
+  @Exclude()
   @DeleteDateColumn()
   deletedAt?: Date;
 
+  @Exclude()
   @CreateDateColumn({
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt?: Date;
 
+  @Exclude()
   @UpdateDateColumn({
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
