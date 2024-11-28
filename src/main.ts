@@ -1,9 +1,13 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Client } from 'pg';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  //Se admite serializacion
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   const config = new DocumentBuilder()
     .setTitle('PedidosAPI')
@@ -17,6 +21,15 @@ async function bootstrap() {
   // // await app.listen(3001);
   // const port = process.env.PORT || 8080;
   // await app.listen(port, '127.0.0.1');
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      // disableErrorMessages: false,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
 
   const client = new Client({
     user: 'root',

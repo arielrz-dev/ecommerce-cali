@@ -7,6 +7,9 @@ import {
   IsNotEmpty,
   IsUrl,
   IsArray,
+  IsOptional,
+  Min,
+  ValidateIf,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { PartialType, OmitType } from '@nestjs/mapped-types';
@@ -79,3 +82,23 @@ export class CreateProductDto {
 export class UpdateProductDTO extends PartialType(
   OmitType(CreateProductDto, ['name']),
 ) {}
+
+export class FilterProductsDto {
+  @IsOptional()
+  @IsPositive()
+  limit: number; //cantidad de elementos a mostrar desde el offset
+
+  @IsPositive()
+  @IsOptional()
+  @Min(0) //donde empieza
+  offset: number;
+
+  @IsOptional()
+  @IsPositive()
+  minPrice: number;
+
+  @IsOptional()
+  @ValidateIf((item) => item.minPrice)
+  @IsPositive()
+  maxPrice: number;
+}

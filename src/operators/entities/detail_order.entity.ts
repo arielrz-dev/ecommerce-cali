@@ -15,12 +15,14 @@ export class DetailOrder {
   id: number;
 
   @CreateDateColumn({
+    name: 'create_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt?: Date;
 
   @UpdateDateColumn({
+    name: 'update_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
