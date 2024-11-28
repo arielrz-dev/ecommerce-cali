@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import { Manufacturer } from './manufacturer.entity';
 import { Category } from './Category.entity';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 
 @Index(['name', 'price'])
 @Entity('products')
@@ -63,10 +63,21 @@ export class Product {
   })
   updateAt?: Date;
 
+  @Exclude()
   @ManyToOne(() => Manufacturer, (manufacturer) => manufacturer.products)
   @JoinColumn({ name: 'manufacturer_id' })
   manufacturer: Manufacturer;
 
   @ManyToMany(() => Category, (category) => category.products)
   categories: Category[];
+
+  @Expose({ name: 'manufacturer_name' })
+  get manufacturerName() {
+    if (this.manufacturer) {
+      return {
+        name: this.manufacturer.name,
+        email: this.manufacturer.email,
+      };
+    }
+  }
 }

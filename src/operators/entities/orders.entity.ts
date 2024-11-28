@@ -11,8 +11,8 @@ import {
 } from 'typeorm';
 import { Buyer } from './buyer.entity';
 import { DetailOrder } from './detail_order.entity';
-import { Exclude, Expose } from 'class-transformer';
-import { parse } from 'path';
+import { Exclude, Expose, Transform } from 'class-transformer';
+import { formatDate } from 'src/utils/date-utils';
 
 //TODO: completar mas adelante
 @Entity('orders')
@@ -28,6 +28,7 @@ export class Order {
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
+  @Transform(({ value }) => formatDate(value), { toPlainOnly: true })
   createdAt?: Date;
 
   @UpdateDateColumn({
@@ -35,6 +36,7 @@ export class Order {
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
+  @Transform(({ value }) => formatDate(value), { toPlainOnly: true })
   updateAt?: Date;
 
   @ManyToOne(() => Buyer, (buyer) => buyer.orders)
@@ -50,7 +52,10 @@ export class Order {
       return this.details
         .filter((detail) => !!detail)
         .map((detail) => ({
-          ...detail.product,
+          name: detail.product.name,
+          desription: detail.product.description,
+          stock: detail.product.stock,
+          price: detail.product.price,
           quantity: detail.quantity,
         }));
     }

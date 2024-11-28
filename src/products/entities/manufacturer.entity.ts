@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Product } from './Product.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('manufacturers')
 export class Manufacturer {
@@ -22,9 +23,11 @@ export class Manufacturer {
   @Column({ type: 'varchar', length: 100, unique: true })
   email: string;
 
+  @Exclude()
   @Column({ type: 'varchar', length: 255 })
   image: string;
 
+  @Exclude()
   @CreateDateColumn({
     name: 'create_at',
     type: 'timestamptz',
@@ -32,6 +35,7 @@ export class Manufacturer {
   })
   createdAt?: Date;
 
+  @Exclude()
   @UpdateDateColumn({
     name: 'update_at',
     type: 'timestamptz',
