@@ -24,19 +24,21 @@ export class Operator {
   role: string;
 
   @CreateDateColumn({
+    name: 'create_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt?: Date;
 
   @UpdateDateColumn({
+    name: 'update_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   updateAt?: Date;
 
   @OneToOne(() => Buyer, (buyer) => buyer.operator, { nullable: true })
-  @JoinColumn({ name: 'buyerId' })
+  @JoinColumn({ name: 'buyer_id' })
   buyer: Buyer;
 
   @Column({ name: 'buyer_id', nullable: true })

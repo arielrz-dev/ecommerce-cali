@@ -3,7 +3,7 @@ import { Product } from '../entities/Product.entity';
 import { CreateProductDto, FilterProductsDto } from '../dtos/CreateProductDTO';
 import { UpdateProductDto } from '../dtos/UpdateProductDTO';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, FindCondition, Repository } from 'typeorm';
+import { Between, FindCondition, MoreThanOrEqual, Repository } from 'typeorm';
 import { ManufacturersService } from './manufacturers.service';
 import { CategoriesService } from './categories.service';
 
@@ -73,16 +73,26 @@ export class ProductsService {
     if (params) {
       const { limit, offset } = params;
       const { minPrice, maxPrice } = params;
-      const where: FindCondition<Product> = {}; //Tipado del where con product
+      console.log(params);
+      // Construcción del objeto 'where'
+      const where: FindCondition<Product> = {};
       if (minPrice && maxPrice) {
-        where.price = Between(minPrice, maxPrice);
+        where.price = Between(minPrice, maxPrice); // Filtro por rango de precios
+      } else if (minPrice) {
+        where.price = MoreThanOrEqual(minPrice); // Filtro para precios mayores o iguales a minPrice
       }
       return await this.productRepository.find({
-        skip: offset,
-        take: limit,
         relations: ['manufacturer'],
+        where,
+        take: limit,
+        skip: offset,
       });
     }
+
+    // Si no hay parámetros, devuelve todos los productos
+    return await this.productRepository.find({
+      relations: ['manufacturer'],
+    });
   }
 
   async findOne(id: number): Promise<Product> {

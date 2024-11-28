@@ -16,6 +16,7 @@ import { UpdateProductDto } from '../dtos/UpdateProductDTO';
 import { CreateProductDto, FilterProductsDto } from '../dtos/CreateProductDTO';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Filter } from 'aws-sdk/clients/devicefarm';
+import { Product } from '../entities/Product.entity';
 
 @ApiTags('Products')
 @Controller('products')
@@ -24,16 +25,16 @@ export class ProductsController {
 
   @ApiOperation({ summary: 'Get all products' })
   @Get()
-  getAllProducts(@Query() params: FilterProductsDto) {
-    return this.productsService.findAll(params);
+  async getAllProducts(@Query() params: FilterProductsDto): Promise<Product[]> {
+    return await this.productsService.findAll(params);
   }
 
-  @ApiOperation({ summary: 'Get a filtered list of products' })
-  @Get()
-  getProducts() {
-    // @Query('brand') brand = '', @Query('offset') offset = 0, @Query('limit') limit = 100,
-    return this.productsService.findAll();
-  }
+  // @ApiOperation({ summary: 'Get a filtered list of products' })
+  // @Get()
+  // getProducts() {
+  //   // @Query('brand') brand = '', @Query('offset') offset = 0, @Query('limit') limit = 100,
+  //   return this.productsService.findAll();
+  // }
 
   @ApiOperation({ summary: 'Get all products including soft-deleted ones' })
   @Get('all-with-deleted')

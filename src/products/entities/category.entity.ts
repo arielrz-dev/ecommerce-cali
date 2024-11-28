@@ -23,6 +23,7 @@ export class Category {
 
   @Exclude()
   @CreateDateColumn({
+    name: 'create_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
@@ -30,6 +31,7 @@ export class Category {
 
   @Exclude()
   @UpdateDateColumn({
+    name: 'update_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
@@ -39,12 +41,10 @@ export class Category {
   @JoinTable({
     name: 'categories_products',
     joinColumn: {
-      name: 'categoryId',
-      referencedColumnName: 'id',
+      name: 'category_id',
     },
     inverseJoinColumn: {
-      name: 'productId',
-      referencedColumnName: 'id',
+      name: 'product_id',
     }, //debe estar en un lado de la relacion.
   })
   products: Product[];

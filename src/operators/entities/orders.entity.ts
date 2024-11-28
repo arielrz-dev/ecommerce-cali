@@ -11,7 +11,8 @@ import {
 } from 'typeorm';
 import { Buyer } from './buyer.entity';
 import { DetailOrder } from './detail_order.entity';
-import { Expose } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
+import { parse } from 'path';
 
 //TODO: completar mas adelante
 @Entity('orders')
@@ -19,16 +20,18 @@ export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'date' })
+  @Column({ name: 'date', type: 'date' })
   date: Date;
 
   @CreateDateColumn({
+    name: 'create_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt?: Date;
 
   @UpdateDateColumn({
+    name: 'update_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
@@ -37,6 +40,7 @@ export class Order {
   @ManyToOne(() => Buyer, (buyer) => buyer.orders)
   buyer: Buyer;
 
+  @Exclude()
   @OneToMany(() => DetailOrder, (detailOrder) => detailOrder.order)
   details: DetailOrder[];
 
@@ -56,12 +60,13 @@ export class Order {
   @Expose({ name: 'total' })
   get total() {
     if (this.details) {
-      return this.details
+      const total = this.details
         .filter((detail) => !!detail)
         .reduce((total, detail) => {
           const totalDetail = detail.product.price * detail.quantity;
           return total + totalDetail;
         }, 0);
+      return parseFloat(total.toFixed(2));
     }
     return 0;
   }

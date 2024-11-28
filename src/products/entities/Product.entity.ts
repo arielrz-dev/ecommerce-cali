@@ -14,7 +14,7 @@ import { Manufacturer } from './manufacturer.entity';
 import { Category } from './Category.entity';
 import { Exclude } from 'class-transformer';
 
-@Index(['manufacturer_id', 'price'])
+@Index(['name', 'price'])
 @Entity('products')
 export class Product {
   @PrimaryGeneratedColumn()
@@ -40,11 +40,16 @@ export class Product {
   image: string;
 
   @Exclude()
-  @DeleteDateColumn()
+  @DeleteDateColumn({
+    name: 'deleted_at',
+    type: 'timestamptz',
+    nullable: true,
+  })
   deletedAt?: Date;
 
   @Exclude()
   @CreateDateColumn({
+    name: 'created_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
@@ -52,6 +57,7 @@ export class Product {
 
   @Exclude()
   @UpdateDateColumn({
+    name: 'update_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
