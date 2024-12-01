@@ -1,4 +1,5 @@
-# API de E-commerce
+# API de E-commerce # ecommerce-cali version 2 - with Mongo
+
 
 ## Descripción
 
@@ -48,3 +49,4 @@ La API estará disponible en http://localhost:3000
 
 Accede a la documentación interactiva de la API en Swagger UI: ## http://localhost:3000/info.
 Aquí encontrarás una descripción detallada de cada endpoint, los parámetros que acepta y los posibles resultados.
+
