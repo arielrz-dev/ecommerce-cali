@@ -1,45 +1,10 @@
-version: '3.8'
 services:
-  postgres:
-    image: postgres:13
-    container_name: ecommerce-cali-postgres
+  mongodb:
+    image: mongo:5.0
+    container_name: ecommerce-cali-mongo
     environment:
-      - POSTGRES_DB=my_db
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=123456
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=123456
+      - MONGO_INITDB_DATABASE=my_db_mongo
     ports:
-      - '5432:5432'
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: ecommerce-cali-pgadmin
-
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=root@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=root
-    ports:
-      - '5050:80'
-
-  mysql:
-    image: mysql:8.0
-    container_name: ecommerce-cali-mysql
-    environment:
-      - MYSQL_DATABASE=mysql_db
-      - MYSQL_USER=usuario1
-      - MYSQL_PASSWORD=123456
-      - MYSQL_ROOT_PASSWORD=123456
-    ports:
-      - '3306:3306'
-    volumes:
-      - ./mysql_data:/var/lib/mysql
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    environment:
-      - PMA_HOST=mysql
-      - PMA_USER=root
-      - PMA_PASSWORD=123456
-    ports:
-      - '8080:80'
+      - '27017:27017'

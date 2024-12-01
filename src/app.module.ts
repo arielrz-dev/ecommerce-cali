@@ -10,6 +10,20 @@ import { DatabaseModule } from './database/database.module';
 import config from './config';
 import * as Joi from 'joi';
 import { lastValueFrom } from 'rxjs';
+import { MongoClient } from 'mongodb';
+
+const uri = 'mongodb://root:123456@localhost:27017/?authMechanism=DEFAULT';
+
+const client = new MongoClient(uri);
+async function run() {
+  await client.connect();
+  const database = client.db('admin');
+  const tasksCollection = database.collection('tasks');
+  const tasks = await tasksCollection.find({}).toArray();
+  console.log(tasks);
+}
+
+run();
 
 @Module({
   imports: [

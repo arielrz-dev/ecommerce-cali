@@ -1,23 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Db } from 'mongodb';
 import { Client } from 'pg';
 
 @Injectable()
 export class AppService {
   configService: any;
   constructor(
-    // @Inject('TAREA ASINC') private tarea: any[],
-    @Inject('PG') private clientPg: Client,
+    @Inject('MONGO') private database: Db,
     @Inject('TAREA_ASINC') private tarea: any[],
     private config: ConfigService,
   ) {}
-
-  getHello(): string {
-    // return 'Hello World!';
-    const apiKey = this.configService.get('API_KEY');
-    const dbname = this.configService.get('DATABASE_NAME');
-    return ` La llave de la aplicaciones es: ${apiKey} , y el nombre de la base de datos ${dbname}`;
-  }
 
   getUseFactory(): string {
     console.log(this.tarea); //se utiliza el useFactory
@@ -25,13 +18,6 @@ export class AppService {
   }
 
   getTasks() {
-    return new Promise((resolve, reject) => {
-      this.clientPg.query('SELECT * FROM tareas', (err, res) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(res.rows);
-      });
-    });
+    return this.database.collection('tasks').find().toArray();
   }
 }

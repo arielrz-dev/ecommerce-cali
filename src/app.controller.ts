@@ -3,23 +3,16 @@ import { ConfigType } from '@nestjs/config';
 import config from './config';
 import { AppService } from './app.service';
 import { ApiExcludeController } from '@nestjs/swagger';
+import { Db } from 'mongodb';
 
 @ApiExcludeController()
 @Controller()
 export class AppController {
-  //constructor(private readonly appService: AppService) {}
   constructor(
     private readonly appService: AppService,
+    @Inject('MONGO') private database: Db,
     @Inject(config.KEY) private configService: ConfigType<typeof config>,
   ) {}
-
-  @Get()
-  getHello(): string {
-    const apiKey = this.configService.apiKey;
-    const name = this.configService.database.name;
-    const dbport = this.configService.database.port;
-    return `La llave de la aplicacion es :${apiKey}, y el nombre y puerto de la bd: ${name}, ${dbport}`;
-  }
 
   @Get('usefactory')
   GetUseFactory(): string {
@@ -28,6 +21,7 @@ export class AppController {
 
   @Get('tasks')
   tasks() {
-    return this.appService.getTasks();
+    const tasksCollection = this.database.collection('tasks');
+    return tasksCollection.find().toArray();
   }
 }
