@@ -1,0 +1,10 @@
+services:
+  mongodb:
+    image: mongo:5.0
+    container_name: ecommerce-cali-mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=123456
+      - MONGO_INITDB_DATABASE=my_db_mongo
+    ports:
+      - '27017:27017'
