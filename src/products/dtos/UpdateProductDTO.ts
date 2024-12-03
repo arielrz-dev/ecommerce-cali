@@ -1,7 +1,6 @@
-export class UpdateProductDto {
-  readonly name?: string;
-  readonly description?: string;
-  readonly stock?: number;
-  readonly made_in?: string;
-  readonly image?: string;
-}
+import { PartialType, OmitType } from '@nestjs/mapped-types';
+import { CreateProductDto } from './CreateProductDTO';
+
+export class UpdateProductDto extends PartialType(
+  OmitType(CreateProductDto, ['name']), // Excluir campos no actualizables como 'name'
+) {}

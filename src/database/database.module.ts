@@ -2,6 +2,7 @@ import { ConfigType } from '@nestjs/config';
 import config from '../config';
 import { MongoClient } from 'mongodb';
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 
 const APIKEY = process.env.API_KEY;
 const APIKEYPROD = process.env.API_KEY_PROD;
@@ -29,6 +30,25 @@ const APIKEYPROD = process.env.API_KEY_PROD;
       inject: [config.KEY],
     },
   ],
-  exports: ['MONGO'],
+  imports: [
+    MongooseModule.forRootAsync({
+      useFactory: (configService: ConfigType<typeof config>) => {
+        const { connection, user, host, dbName, password, port } =
+          configService.mongo;
+
+        if (!connection || !user || !host || !dbName || !password || !port) {
+          throw new Error('MongoDB configuration is incomplete');
+        }
+        return {
+          uri: `${connection}://${host}:${port}`,
+          user,
+          pass: password,
+          dbName,
+        };
+      },
+      inject: [config.KEY],
+    }),
+  ],
+  exports: ['MONGO', MongooseModule],
 })
 export class DatabaseModule {}

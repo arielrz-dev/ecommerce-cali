@@ -64,7 +64,3 @@ export class CreateProductDto {
   @Transform(({ value }) => value.toLowerCase())
   readonly image: string;
 }
-
-export class UpdateProductDTO extends PartialType(
-  OmitType(CreateProductDto, ['name']),
-) {}
