@@ -45,15 +45,6 @@ export class OperatorsService {
     },
   ];
 
-  getOrdersByUser(id: number): Order {
-    const operator: Operator | void = this.findOne(id);
-    return {
-      date: new Date(),
-      operator,
-      products: this.productsService.findAll(),
-    };
-  }
-
   findAll(): Operator[] {
     return this.operators;
   }

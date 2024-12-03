@@ -6,13 +6,13 @@ import { ManufacturersService } from 'src/products/services/manufacturers.servic
 import { ManufacturersController } from 'src/products/controllers/manufacturers.controller';
 import { CategoriesController } from 'src/products/controllers/categories.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ProductSchema } from './entities/Product.entity';
+import { Product, ProductSchema } from './entities/Product.entity';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       {
-        name: 'Product',
+        name: Product.name,
         schema: ProductSchema,
       },
     ]),
