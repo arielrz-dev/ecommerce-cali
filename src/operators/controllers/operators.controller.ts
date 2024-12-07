@@ -29,7 +29,7 @@ export class OperatorsController {
   @ApiOperation({ summary: 'Get an operator by ID' })
   @Get(':idOperator')
   @HttpCode(HttpStatus.ACCEPTED)
-  getOperator(@Param('idOperator', ParseIntPipe) idOperator: number) {
+  getOperator(@Param('idOperator', ParseIntPipe) idOperator: string) {
     return this.operatorsService.findOne(idOperator);
   }
 
@@ -41,13 +41,13 @@ export class OperatorsController {
 
   @ApiOperation({ summary: 'Update an existing operator' })
   @Put('/:id')
-  updateOperator(@Param('id') id: number, @Body() payload: UpdateOperatorDto) {
+  updateOperator(@Param('id') id: string, @Body() payload: UpdateOperatorDto) {
     return this.operatorsService.update(id, payload);
   }
 
   @ApiOperation({ summary: 'Delete an operator by ID' })
   @Delete('/:id')
-  deleteOperator(@Param('id', ParseIntPipe) id: number) {
+  deleteOperator(@Param('id', ParseIntPipe) id: string) {
     return this.operatorsService.remove(id);
   }
 }

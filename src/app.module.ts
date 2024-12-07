@@ -11,6 +11,7 @@ import config from './config';
 import * as Joi from 'joi';
 import { lastValueFrom } from 'rxjs';
 import { MongoClient } from 'mongodb';
+import { AuthModule } from './auth/auth.module';
 
 const uri = 'mongodb://root:123456@localhost:27017/?authMechanism=DEFAULT';
 
@@ -41,6 +42,7 @@ run();
     ProductsModule,
     OperatorsModule,
     DatabaseModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
