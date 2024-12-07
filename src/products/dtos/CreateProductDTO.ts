@@ -6,10 +6,12 @@ import {
   MaxLength,
   IsNotEmpty,
   IsUrl,
+  ValidateNested,
+  IsMongoId,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { PartialType, OmitType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
+import { CreateCategoryDto } from './CreateCategoryDTO';
 
 export class CreateProductDto {
   @ApiProperty({
@@ -63,4 +65,13 @@ export class CreateProductDto {
   @IsNotEmpty()
   @Transform(({ value }) => value.toLowerCase())
   readonly image: string;
+
+  @ValidateNested()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly category: CreateCategoryDto;
+
+  @IsNotEmpty()
+  @IsMongoId()
+  readonly manufacturer: string;
 }

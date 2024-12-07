@@ -5,11 +5,25 @@ import { BuyersService } from './services/buyers.service';
 import { ProductsModule } from 'src/products/products.module';
 import { BuyersController } from 'src/operators/controllers/buyers.controller';
 import { OrdersController } from './controllers/orders.controller';
-import { OrdersService } from './services/orders.service';
+import { OrderService } from './services/orders.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { BuyerSchema } from './entities/buyer.entity';
+import { Order, OrderSchema } from './entities/orders.entity';
+import { ProductSchema } from 'src/products/entities/Product.entity';
 
 @Module({
-  imports: [ProductsModule],
+  imports: [
+    MongooseModule.forFeature([
+      { name: 'Buyer', schema: BuyerSchema },
+      {
+        name: Order.name,
+        schema: OrderSchema,
+      },
+      { name: 'Product', schema: ProductSchema },
+    ]),
+    ProductsModule,
+  ],
   controllers: [OperatorsController, BuyersController, OrdersController],
-  providers: [OperatorsService, BuyersService, OrdersService],
+  providers: [OperatorsService, BuyersService, OrderService],
 })
 export class OperatorsModule {}

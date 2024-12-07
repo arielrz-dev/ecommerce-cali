@@ -13,7 +13,6 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BuyersService } from '../services/buyers.service';
 import { CreateBuyerDto } from '../dtos/CreateBuyerDTO';
-import { UpdateBuyerDto } from '../dtos/UpdateBuyerDto';
 
 @ApiTags('Buyers')
 @Controller('buyers')
@@ -26,10 +25,10 @@ export class BuyersController {
     return this.buyersService.findAll();
   }
 
-  @Get(':idBuyer')
+  @Get('/:idBuyer')
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: 'Get a buyer by ID' })
-  getBuyer(@Param('idBuyer', ParseIntPipe) idBuyer: number) {
+  getBuyer(@Param('idBuyer') idBuyer: string) {
     return this.buyersService.findOne(idBuyer);
   }
 
@@ -39,15 +38,15 @@ export class BuyersController {
     return this.buyersService.create(payload);
   }
 
-  @Put('/:id')
-  @ApiOperation({ summary: 'Update an existing buyer' })
-  updateBuyer(@Param('id') id: string, @Body() payload: UpdateBuyerDto) {
-    return this.buyersService.update(+id, payload);
-  }
+  // @Put('/:id')
+  // @ApiOperation({ summary: 'Update an existing buyer' })
+  // updateBuyer(@Param('id') id: string, @Body() payload: UpdateBuyerDto) {
+  //   return this.buyersService.update(+id, payload);
+  // }
 
   @Delete('/:id')
   @ApiOperation({ summary: 'Delete a buyer by ID' })
-  deleteBuyer(@Param('id', ParseIntPipe) id: number) {
+  deleteBuyer(@Param('id', ParseIntPipe) id: string) {
     this.buyersService.remove(id);
   }
 }
