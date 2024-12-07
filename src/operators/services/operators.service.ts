@@ -1,92 +1,109 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Order } from '../entities/orders.entity';
-import { ProductsService } from 'src/products/services/products.service';
-import { Operator } from '../entities/operator.entity';
 import {
-  CreateOperatorDto,
-  UpdateOperatorDto,
-} from '../dtos/CreateOperatorDTO';
-import { Client } from 'pg';
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { CreateOperatorDto } from '../dtos/CreateOperatorDto';
+import { UpdateOperatorDto } from '../dtos/UpdateOperatorDto';
+import { Operator } from '../entities/operator.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class OperatorsService {
-  constructor(private productsService: ProductsService) {}
+  constructor(
+    @InjectModel(Operator.name) private operatorModel: Model<Operator>,
+  ) {}
 
-  operators = [
-    {
-      id: 1,
-      email: 'admin@store.com',
-      password: 'hashed_password_1',
-      role: 'admin',
-    },
-    {
-      id: 2,
-      email: 'john.doe@store.com',
-      password: 'hashed_password_2',
-      role: 'customer',
-    },
-    {
-      id: 3,
-      email: 'susan.seller@store.com',
-      password: 'hashed_password_3',
-      role: 'seller',
-    },
-    {
-      id: 4,
-      email: 'warehouse.jack@store.com',
-      password: 'hashed_password_4',
-      role: 'warehouse_staff',
-    },
-    {
-      id: 5,
-      email: 'support.mary@store.com',
-      password: 'hashed_password_5',
-      role: 'support_agent',
-    },
-  ];
+  async create(
+    createOperatorDto: CreateOperatorDto,
+  ): Promise<Omit<Operator, 'password'>> {
+    try {
+      // Crear un nuevo documento basado en el DTO
+      const hashedPassword = await bcrypt.hash(createOperatorDto.password, 10);
 
-  findAll(): Operator[] {
-    return this.operators;
-  }
+      // Crear el operador con la contraseña encriptada
+      const operator = new this.operatorModel({
+        ...createOperatorDto,
+        password: hashedPassword,
+      });
 
-  findOne(id: number): Operator {
-    const operator = this.operators.find((item) => item.id === id);
-    if (!operator) {
-      throw new NotFoundException(`Operator with ID ${id} not found`);
+      const savedOperator = await operator.save();
+
+      // Excluir la contraseña del resultado
+      const { password, ...rta } = savedOperator.toObject();
+      return rta;
+    } catch (error) {
+      if (error.name === 'ValidationError') {
+        throw new BadRequestException(`Validation failed: ${error.message}`);
+      }
+      throw new Error(`Error creating operator: ${error.message}`);
     }
-    return operator;
   }
 
-  create(createOperatorDto: CreateOperatorDto): Operator {
-    const newOperatorId = this.operators.length
-      ? Math.max(...this.operators.map((o) => o.id)) + 1
-      : 1;
-    const newOperator: Operator = {
-      id: newOperatorId,
-      ...createOperatorDto,
-    };
-    this.operators.push(newOperator);
-    return newOperator;
-  }
-
-  update(id: number, payload: UpdateOperatorDto): Operator {
-    const operatorIndex = this.operators.findIndex(
-      (operator) => operator.id === id,
-    );
-    if (operatorIndex === -1) {
-      throw new NotFoundException(`Operator with ID ${id} not found`);
+  async findByEmail(email: string): Promise<Operator> {
+    try {
+      return await this.operatorModel.findOne({ email }).exec();
+    } catch (error) {
+      throw new Error(`Error finding operator by email: ${error.message}`);
     }
-    const updatedOperator = { ...this.operators[operatorIndex], ...payload };
-    this.operators[operatorIndex] = updatedOperator;
-    return updatedOperator;
   }
 
-  remove(id: number): boolean {
-    const index = this.operators.findIndex((operator) => operator.id === id);
-    if (index === -1) {
-      throw new NotFoundException(`Operator with ID ${id} not found`);
+  async findAll(): Promise<Operator[]> {
+    try {
+      return await this.operatorModel.find().exec();
+    } catch (error) {
+      throw new Error(`Error retrieving operators: ${error.message}`);
     }
-    this.operators.splice(index, 1);
-    return true;
+  }
+
+  async findOne(id: string): Promise<Operator> {
+    try {
+      const operator = await this.operatorModel.findById(id).exec();
+      if (!operator) {
+        throw new NotFoundException(`Operator with ID ${id} not found.`);
+      }
+      return operator;
+    } catch (error) {
+      if (error.kind === 'ObjectId') {
+        throw new BadRequestException(`Invalid ID format: ${id}`);
+      }
+      throw new Error(`Error finding operator: ${error.message}`);
+    }
+  }
+
+  async update(id: string, changes: UpdateOperatorDto): Promise<Operator> {
+    try {
+      const updatedOperator = await this.operatorModel
+        .findByIdAndUpdate(id, { $set: changes }, { new: true })
+        .exec();
+      if (!updatedOperator) {
+        throw new NotFoundException(`Operator with ID ${id} not found.`);
+      }
+      return updatedOperator;
+    } catch (error) {
+      if (error.kind === 'ObjectId') {
+        throw new BadRequestException(`Invalid ID format: ${id}`);
+      }
+      throw new Error(`Error updating operator: ${error.message}`);
+    }
+  }
+
+  async remove(id: string): Promise<Operator> {
+    try {
+      const deletedOperator = await this.operatorModel
+        .findByIdAndDelete(id)
+        .exec();
+      if (!deletedOperator) {
+        throw new NotFoundException(`Operator with ID ${id} not found.`);
+      }
+      return deletedOperator;
+    } catch (error) {
+      if (error.kind === 'ObjectId') {
+        throw new BadRequestException(`Invalid ID format: ${id}`);
+      }
+      throw new Error(`Error deleting operator: ${error.message}`);
+    }
   }
 }

@@ -10,6 +10,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BuyerSchema } from './entities/buyer.entity';
 import { Order, OrderSchema } from './entities/orders.entity';
 import { ProductSchema } from 'src/products/entities/Product.entity';
+import { OperatorSchema } from './entities/operator.entity';
 
 @Module({
   imports: [
@@ -20,10 +21,12 @@ import { ProductSchema } from 'src/products/entities/Product.entity';
         schema: OrderSchema,
       },
       { name: 'Product', schema: ProductSchema },
+      { name: 'Operator', schema: OperatorSchema },
     ]),
     ProductsModule,
   ],
   controllers: [OperatorsController, BuyersController, OrdersController],
   providers: [OperatorsService, BuyersService, OrderService],
+  exports: [OperatorsService],
 })
 export class OperatorsModule {}
