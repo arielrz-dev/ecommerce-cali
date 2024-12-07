@@ -1,5 +1,10 @@
-import { IsString, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
-import { PartialType, OmitType } from '@nestjs/mapped-types';
+import {
+  IsString,
+  IsNotEmpty,
+  MinLength,
+  MaxLength,
+  IsArray,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateBuyerDto {
@@ -29,8 +34,8 @@ export class CreateBuyerDto {
   @MinLength(7)
   @MaxLength(15)
   readonly phone: string;
-}
 
-export class UpdateBuyerDto extends PartialType(
-  OmitType(CreateBuyerDto, ['name']),
-) {}
+  @IsArray()
+  @IsNotEmpty()
+  readonly addresses: any;
+}

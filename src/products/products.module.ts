@@ -7,6 +7,10 @@ import { ManufacturersController } from 'src/products/controllers/manufacturers.
 import { CategoriesController } from 'src/products/controllers/categories.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Product, ProductSchema } from './entities/Product.entity';
+import {
+  Manufacturer,
+  ManufacturerSchema,
+} from './entities/manufacturer.entity';
 
 @Module({
   imports: [
@@ -15,6 +19,7 @@ import { Product, ProductSchema } from './entities/Product.entity';
         name: Product.name,
         schema: ProductSchema,
       },
+      { name: Manufacturer.name, schema: ManufacturerSchema },
     ]),
   ],
   controllers: [
@@ -23,6 +28,6 @@ import { Product, ProductSchema } from './entities/Product.entity';
     CategoriesController,
   ],
   providers: [ProductsService, CategoriesService, ManufacturersService],
-  exports: [ProductsService],
+  exports: [ProductsService, ManufacturersService],
 })
 export class ProductsModule {}

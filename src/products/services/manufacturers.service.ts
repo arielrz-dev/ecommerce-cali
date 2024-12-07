@@ -1,102 +1,56 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UpdateManufacturerDto } from '../dtos/UpdateManufacturerDto';
 import { Manufacturer } from '../entities/manufacturer.entity';
 import { CreateManufacturerDto } from '../dtos/CreateManufacturerDTO';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class ManufacturersService {
-  manufacturers = [
-    {
-      id: 1,
-      name: 'Apple Inc.',
-      address: '1 Apple Park Way, Cupertino, CA, USA',
-      email: 'support@apple.com',
-      image: 'https://example.com/images/apple.png',
-    },
-    {
-      id: 2,
-      name: 'Samsung Electronics',
-      address: '129 Samsung-ro, Yeongtong-gu, Suwon-si, South Korea',
-      email: 'support@samsung.com',
-      image: 'https://example.com/images/samsung.png',
-    },
-    {
-      id: 3,
-      name: 'Sony Interactive Entertainment',
-      address: '1-7-1 Konan, Minato-ku, Tokyo, Japan',
-      email: 'support@sony.com',
-      image: 'https://example.com/images/sony.png',
-    },
-    {
-      id: 4,
-      name: 'Nintendo Co., Ltd.',
-      address: '11-1 Kamitoba-hokotate-cho, Minami-ku, Kyoto, Japan',
-      email: 'support@nintendo.com',
-      image: 'https://example.com/images/nintendo.png',
-    },
-    {
-      id: 5,
-      name: 'Microsoft Corporation',
-      address: 'One Microsoft Way, Redmond, WA, USA',
-      email: 'support@microsoft.com',
-      image: 'https://example.com/images/microsoft.png',
-    },
-  ];
+  constructor(
+    @InjectModel(Manufacturer.name)
+    private manufacturerModel: Model<Manufacturer>,
+  ) {}
 
-  create(CreateManufacturersDto: CreateManufacturerDto): Manufacturer {
-    const newManufacturerId = this.manufacturers.length
-      ? Math.max(...this.manufacturers.map((p) => p.id)) + 1
-      : 1;
-
-    const newManufacturer: Manufacturer = {
-      id: newManufacturerId,
-      ...CreateManufacturersDto,
-    };
-
-    this.manufacturers.push(newManufacturer);
-    return newManufacturer;
+  create(CreateManufacturersDto: CreateManufacturerDto): Promise<Manufacturer> {
+    const newManufacturer = new this.manufacturerModel(CreateManufacturersDto);
+    return newManufacturer.save();
   }
 
   findAll() {
-    return this.manufacturers;
+    return this.manufacturerModel.find();
   }
 
-  findOne(id: number): Manufacturer {
-    const Manufacturer = this.manufacturers.find((item) => item.id === id);
-    if (!Manufacturer) {
-      throw new NotFoundException(`Manufacturer with id ${id} is not found`);
+  async findOne(id: number): Promise<Manufacturer> {
+    try {
+      return this.manufacturerModel.findById(id).exec();
+    } catch (error) {
+      throw new Error(`Error finding manufacturer: ${error.message}`);
     }
-    return Manufacturer;
   }
 
-  update(id: number, payload: UpdateManufacturerDto): void {
-    const manufacturerIndex = this.manufacturers.findIndex(
-      (Manufacturer) => Manufacturer.id === id,
-    );
-
-    if (manufacturerIndex !== -1) {
-      const updatedManufacturer = {
-        ...this.manufacturers[manufacturerIndex],
-        ...payload,
-      };
-
-      this.manufacturers.splice(manufacturerIndex, 1, updatedManufacturer);
-    } else {
-      console.warn(`Manufacturer with ID ${id} not found.`);
+  update(id: number, payload: UpdateManufacturerDto): Promise<Manufacturer> {
+    try {
+      const updatedManufacturer = this.manufacturerModel
+        .findByIdAndUpdate(id, { $set: payload }, { new: true })
+        .exec();
+      if (!updatedManufacturer) {
+        throw new NotFoundException(`Manufacturer with ID ${id} not found.`);
+      }
+      return updatedManufacturer;
+    } catch (error) {
+      if (error.kind === 'ObjectId') {
+        throw new BadRequestException(`Invalid ID format: ${id}`);
+      }
+      throw new Error(`Error updating manufacturer: ${error.message}`);
     }
   }
 
   remove(id: number) {
-    const index = this.manufacturers.findIndex(
-      (manufacturer) => manufacturer.id === id,
-    );
-    if (index !== -1) {
-      this.manufacturers.splice(index, 1);
-      return true;
-    } else {
-      throw new NotFoundException(
-        `Manufacturer with ID ${id} not found in the array`,
-      );
-    }
+    this.manufacturerModel.findByIdAndDelete(id);
   }
 }

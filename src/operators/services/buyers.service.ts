@@ -1,79 +1,87 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Buyer } from '../entities/Buyer.entity';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Buyer } from '../entities/buyer.entity';
 import { CreateBuyerDto } from '../dtos/CreateBuyerDTO';
 import { UpdateBuyerDto } from '../dtos/UpdateBuyerDto';
 
 @Injectable()
 export class BuyersService {
-  private buyers: Buyer[] = [
-    {
-      id: 1,
-      name: 'John',
-      surname: 'Doe',
-      phone: '123-456-7890',
-    },
-    {
-      id: 2,
-      name: 'Jane',
-      surname: 'Smith',
-      phone: '098-765-4321',
-    },
-    {
-      id: 3,
-      name: 'Alice',
-      surname: 'Johnson',
-      phone: '555-123-4567',
-    },
-  ];
+  constructor(@InjectModel(Buyer.name) private buyerModel: Model<Buyer>) {}
 
-  create(createBuyerDto: CreateBuyerDto): Buyer {
-    const newBuyerId = this.buyers.length
-      ? Math.max(...this.buyers.map((b) => b.id)) + 1
-      : 1;
+  async create(createBuyerDto: CreateBuyerDto): Promise<Buyer> {
+    try {
+      const { addresses, ...rest } = createBuyerDto;
 
-    const newBuyer: Buyer = {
-      id: newBuyerId,
-      ...createBuyerDto,
-    };
+      // Crear un nuevo documento asegurando que las direcciones se almacenen correctamente
+      const newBuyer = new this.buyerModel({
+        ...rest,
+        addresses: addresses.map((address) => ({
+          street: address.street,
+          number: address.number,
+          city: address.city,
+          country: address.country,
+        })),
+      });
 
-    this.buyers.push(newBuyer);
-    return newBuyer;
-  }
-
-  findAll() {
-    return this.buyers;
-  }
-
-  findOne(id: number): Buyer {
-    const buyer = this.buyers.find((item) => item.id === id);
-    if (!buyer) {
-      throw new NotFoundException(`Buyer with id ${id} is not found`);
-    }
-    return buyer;
-  }
-
-  update(id: number, payload: UpdateBuyerDto): void {
-    const buyerIndex = this.buyers.findIndex((buyer) => buyer.id === id);
-
-    if (buyerIndex !== -1) {
-      const updatedBuyer = {
-        ...this.buyers[buyerIndex],
-        ...payload,
-      };
-
-      this.buyers.splice(buyerIndex, 1, updatedBuyer);
-    } else {
-      console.warn(`Buyer with ID ${id} not found.`);
+      return await newBuyer.save();
+    } catch (error) {
+      if (error.name === 'ValidationError') {
+        throw new BadRequestException(`Validation failed: ${error.message}`);
+      }
+      throw new Error(`Error creating buyer: ${error.message}`);
     }
   }
 
-  remove(id: number) {
-    const index = this.buyers.findIndex((buyer) => buyer.id === id);
-    if (index !== -1) {
-      this.buyers.splice(index, 1);
-      return true;
-    } else {
-      throw new NotFoundException(`Buyer with ID ${id} not found in the array`);
+  async findAll(): Promise<Buyer[]> {
+    try {
+      return await this.buyerModel.find().exec();
+    } catch (error) {
+      throw new Error(`Error retrieving buyers: ${error.message}`);
+    }
+  }
+
+  async findOne(id: string): Promise<Buyer> {
+    try {
+      return await this.buyerModel.findById(id).populate('addresses').exec();
+    } catch (error) {
+      throw new Error(`Error fetching buyer: ${error.message}`);
+    }
+  }
+
+  async update(id: string, changes: UpdateBuyerDto): Promise<Buyer> {
+    try {
+      const updatedBuyer = await this.buyerModel
+        .findByIdAndUpdate(id, { $set: changes }, { new: true })
+        .exec();
+      if (!updatedBuyer) {
+        throw new NotFoundException(`Buyer with ID ${id} not found.`);
+      }
+      return updatedBuyer;
+    } catch (error) {
+      if (error.kind === 'ObjectId') {
+        throw new BadRequestException(`Invalid ID format: ${id}`);
+      }
+      throw new Error(`Error updating buyer: ${error.message}`);
+    }
+  }
+
+  async remove(id: string): Promise<Buyer> {
+    try {
+      const deletedBuyer = await this.buyerModel.findByIdAndDelete(id).exec();
+      if (!deletedBuyer) {
+        throw new NotFoundException(`Buyer with ID ${id} not found.`);
+      }
+      return deletedBuyer;
+    } catch (error) {
+      if (error.kind === 'ObjectId') {
+        throw new BadRequestException(`Invalid ID format: ${id}`);
+      }
+      throw new Error(`Error deleting buyer: ${error.message}`);
     }
   }
 }

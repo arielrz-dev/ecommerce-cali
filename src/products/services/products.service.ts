@@ -55,7 +55,9 @@ export class ProductsService {
         query.skip(params.offset);
       }
 
-      return await query.exec();
+      query.populate('manufacturer');
+
+      return await query.populate('manufacturer').exec();
     } catch (error) {
       throw new Error(`Error retrieving products: ${error.message}`);
     }

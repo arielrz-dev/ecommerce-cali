@@ -1,10 +1,14 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsOptional, IsPositive, Min, ValidateIf } from 'class-validator';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+
+import { Manufacturer } from './manufacturer.entity';
+import { AddressSchema } from 'src/operators/entities/address.entity';
+import { Address } from 'aws-sdk/clients/ses';
 
 @Schema()
 export class Product extends Document {
-  @Prop({ required: false, type: Number })
+  @Prop({ required: false, type: String })
   id: number;
 
   @Prop({ required: true, type: String, maxlength: 50 })
@@ -33,6 +37,16 @@ export class Product extends Document {
 
   @Prop({ type: Date, nullable: true, default: null })
   updateAt?: Date;
+
+  @Prop(
+    raw({
+      type: AddressSchema,
+    }),
+  )
+  category: Record<string, Address>;
+
+  @Prop({ type: Types.ObjectId, ref: Manufacturer.name })
+  manufacturer: Manufacturer | Types.ObjectId;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
