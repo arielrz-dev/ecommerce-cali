@@ -1,22 +1,34 @@
 // import { Test, TestingModule } from '@nestjs/testing';
+// import { INestApplication } from '@nestjs/common';
 // import { AppController } from './app.controller';
 // import { AppService } from './app.service';
+// import { ConfigModule } from '@nestjs/config';
+// import { DatabaseModule } from './database/database.module'; // Assuming you have a DatabaseModule
+// import * as request from 'supertest';
 
 // describe('AppController', () => {
-//   let appController: AppController;
+//   let app: INestApplication;
 
 //   beforeEach(async () => {
-//     const app: TestingModule = await Test.createTestingModule({
+//     const moduleRef = await Test.createTestingModule({
+//       imports: [ConfigModule.forRoot(), DatabaseModule],
 //       controllers: [AppController],
 //       providers: [AppService],
 //     }).compile();
 
-//     appController = app.get<AppController>(AppController);
+//     app = moduleRef.createNestApplication();
+//     await app.init();
+//   });
+
+//   afterEach(async () => {
+//     await app.close();
 //   });
 
 //   describe('root', () => {
-//     it('should return "Hello World!"', () => {
-//       expect(appController.getHello()).toBe('Hello World!');
+//     it('should return "Hello World!"', async () => {
+//       const response = await request(app.getHttpServer()).get('/').expect(200);
+
+//       expect(response.body).toBe('Hello World!');
 //     });
 //   });
 // });

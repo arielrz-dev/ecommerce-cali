@@ -11,8 +11,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrderService } from '../services/orders.service';
 import { addProductsToOrderDto, CreateOrderDto } from '../dtos/CreateOrderDto';
-import { UpdateOrderDto } from '../dtos/UpdateOrderDTO';
-import { MongoIdPipe } from 'src/common/mongo-id.pipe';
+import { MongoIdPipe } from '../../common/mongo-id.pipe';
 import { FilterOrderDto } from '../entities/orders.entity';
 
 @ApiTags('Orders')

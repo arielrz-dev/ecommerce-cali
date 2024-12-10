@@ -3,8 +3,10 @@ import { IsOptional, IsPositive, Min, ValidateIf } from 'class-validator';
 import { Document, Types } from 'mongoose';
 
 import { Manufacturer } from './manufacturer.entity';
-import { AddressSchema } from 'src/operators/entities/address.entity';
-import { Address } from 'aws-sdk/clients/ses';
+import {
+  Address,
+  AddressSchema,
+} from '../../operators/entities/address.entity';
 
 @Schema()
 export class Product extends Document {
@@ -43,7 +45,7 @@ export class Product extends Document {
       type: AddressSchema,
     }),
   )
-  category: Record<string, Address>;
+  category?: Record<string, Address>;
 
   @Prop({ type: Types.ObjectId, ref: Manufacturer.name })
   manufacturer: Manufacturer | Types.ObjectId;

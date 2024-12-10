@@ -7,10 +7,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types } from 'mongoose';
 import { CreateOrderDto, UpdateOrderDto } from '../dtos/CreateOrderDto';
 import { Order, FilterOrderDto } from '../entities/orders.entity';
-import { Product } from 'src/products/entities/Product.entity';
+import { Product } from '../../products/entities/Product.entity';
 
 @Injectable()
 export class OrderService {
+  getAllOrders(getAllOrders: any) {
+    throw new Error('Method not implemented.');
+  }
   findOne(id: string) {
     try {
       return this.orderModel.findById(id).populate('buyer').exec();

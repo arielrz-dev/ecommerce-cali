@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { ProductsService } from './services/products.service';
 import { ProductsController } from './controllers/products.controller';
 import { CategoriesService } from './services/categories.service';
-import { ManufacturersService } from 'src/products/services/manufacturers.service';
-import { ManufacturersController } from 'src/products/controllers/manufacturers.controller';
-import { CategoriesController } from 'src/products/controllers/categories.controller';
+import { ManufacturersService } from '../products/services/manufacturers.service';
+import { ManufacturersController } from '../products/controllers/manufacturers.controller';
+import { CategoriesController } from '../products/controllers/categories.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Product, ProductSchema } from './entities/Product.entity';
 import {

@@ -7,15 +7,21 @@ import {
   Put,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
-import { ParseIntPipe } from '../../common/parse-int.pipe';
 import { UpdateProductDto } from '../dtos/UpdateProductDTO';
 import { CreateProductDto } from '../dtos/CreateProductDTO';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MongoIdPipe } from 'src/common/mongo-id.pipe';
+import { MongoIdPipe } from '../../common/mongo-id.pipe';
 import { FilterProductDto } from '../entities/Product.entity';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from '../../auth/models/roles.model';
 
+// @UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Products')
 @Controller('products')
 export class ProductsController {
@@ -33,6 +39,7 @@ export class ProductsController {
     return this.productsService.findAll(params);
   }
 
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Create a new product' })
   @Post()
   create(@Body() payload: CreateProductDto) {
