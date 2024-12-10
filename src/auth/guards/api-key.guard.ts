@@ -8,7 +8,7 @@ import {
 import { ConfigType } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
-import config from 'src/config';
+import config from '../../config';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { Request } from 'express';
 

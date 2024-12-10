@@ -67,7 +67,6 @@ export class CreateProductDto {
   readonly image: string;
 
   @ValidateNested()
-  @IsNotEmpty()
   @ApiProperty()
   readonly category: CreateCategoryDto;
 

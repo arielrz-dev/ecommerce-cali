@@ -1,15 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OrdersService } from '../services/orders.service';
+import { getModelToken } from '@nestjs/mongoose';
+import { OrderService } from '../../operators/services/orders.service';
+import { Order } from '../entities/orders.entity';
+import { Product } from '../../products/entities/Product.entity';
 
-describe('OrdersService', () => {
-  let service: OrdersService;
+describe('OrderService', () => {
+  let service: OrderService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [OrdersService],
+      providers: [
+        OrderService,
+        {
+          provide: getModelToken(Order.name),
+          useValue: {},
+        },
+        {
+          provide: getModelToken(Product.name),
+          useValue: {},
+        },
+      ],
     }).compile();
 
-    service = module.get<OrdersService>(OrdersService);
+    service = module.get<OrderService>(OrderService);
   });
 
   it('should be defined', () => {

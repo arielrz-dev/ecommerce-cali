@@ -1,4 +1,4 @@
-import { Product } from 'src/products/entities/Product.entity';
+import { Product } from '../../products/entities/Product.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { Buyer } from './buyer.entity';
